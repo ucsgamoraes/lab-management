@@ -2,9 +2,16 @@
 .signin-container {
   display: flex;
   height: 100vh;
-  justify-content: center;
-  align-items: center;
   background: #f0f2f5;
+}
+
+.signin-content {
+  display: flex;
+  height: 100vh;
+  background: #f0f2f5;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .signin-form {
