@@ -13,12 +13,30 @@ export default function Signin() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Tentando logar com:', credentials);
-    // Aqui você pode adicionar lógica de autenticação
+    try {
+      fetch('https://laboratorio-5vcf.onrender.com/user/login',
+        {
+          method: "POST",
+          body: JSON.stringify(credentials),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      ).then((r) => {
+        return r.text()
+      }
+      ).then((r) => {
+        localStorage.setItem("token", r);
+        window.location = "/home";
+      });
+    } catch (error) {
+      alert(1);
+    }
   };
 
   return (
     <div className="signin-container">
+
       <form className="signin-form" onSubmit={handleSubmit}>
         <h2>Entrar</h2>
         <input
