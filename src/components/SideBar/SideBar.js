@@ -106,6 +106,13 @@ export const SideBar = () => {
                 <FontAwesomeIcon icon={faTags} style={{ marginRight: "8px" }} />
                 Cadastrar Categoria
               </button>
+              <button
+                className="submenu-btn"
+                onClick={() => navigateToScreen("/register-user")}
+              >
+                <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} />
+                Cadastrar Usuário
+              </button>
             </div>
           )}
 
