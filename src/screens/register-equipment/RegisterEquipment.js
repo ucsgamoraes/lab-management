@@ -6,42 +6,23 @@ import api from "../../services/api";
 
 function RegisterEquipment() {
   const [formData, setFormData] = useState({
-    // id: 0,
+    identification: "",
     propertyNumber: "",
-    number: "",
+    serialNumber: "",
     equipmentTag: "",
+    dateOfUse: "",
+    nextCalibrationDate: "",
+    nextMaintenanceDate: "",
     laboratoryId: 0,
     template: {
       id: 0,
-      //   identification: "",
-      //   description: "",
-      //   brand: "",
-      //   maintenancePeriod: 0,
-      //   periodType: "DAYS",
-      //   templateType: "ANALOG",
-      //   category: {
-      //     id: 0,
-      //     name: "",
-      //   },
     },
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name.startsWith("template.category.")) {
-      const field = name.split(".")[2];
-      setFormData((prev) => ({
-        ...prev,
-        template: {
-          ...prev.template,
-          category: {
-            ...prev.template.category,
-            [field]: value,
-          },
-        },
-      }));
-    } else if (name.startsWith("template.")) {
+    if (name.startsWith("template.")) {
       const field = name.split(".")[1];
       setFormData((prev) => ({
         ...prev,
@@ -63,11 +44,15 @@ function RegisterEquipment() {
     try {
       console.log(formData);
       const response = await api.post("/equipment", {
+        identification: formData.identification,
         propertyNumber: formData.propertyNumber,
-        number: formData.number,
+        serialNumber: formData.serialNumber,
         equipmentTag: formData.equipmentTag,
-        templateId: parseInt(formData.template.id),
+        dateOfUse: formData.dateOfUse,
+        nextCalibrationDate: formData.nextCalibrationDate,
+        nextMaintenanceDate: formData.nextMaintenanceDate,
         laboratoryId: parseInt(formData.laboratoryId),
+        templateId: parseInt(formData.template.id),
       });
       alert("Equipamento cadastrado com sucesso!");
       console.log(response.data);
@@ -86,73 +71,67 @@ function RegisterEquipment() {
           <div className="form-columns">
             <div className="form-column">
               <FormInput
-                label="Property Number"
+                label="Identificação"
+                name="identification"
+                value={formData.identification}
+                onChange={handleChange}
+              />
+              <FormInput
+                label="Template (ID)"
+                name="template.id"
+                type="number"
+                value={formData.template.id}
+                onChange={handleChange}
+              />
+              <FormInput
+                label="Número do Patrimônio"
                 name="propertyNumber"
+                value={formData.propertyNumber}
                 onChange={handleChange}
               />
               <FormInput
-                label="Equipment Tag"
+                label="Número de Série"
+                name="serialNumber"
+                value={formData.serialNumber}
+                onChange={handleChange}
+              />
+              <FormInput
+                label="Tag do Equipamento"
                 name="equipmentTag"
+                value={formData.equipmentTag}
                 onChange={handleChange}
               />
-              <FormInput
-                label="Laboratory ID"
-                name="laboratoryId"
-                type="number"
-                onChange={handleChange}
-              />
-              {/* <FormInput
-                label="Description"
-                name="template.description"
-                onChange={handleChange}
-              /> */}
-              {/* <FormInput
-                label="Maintenance Period"
-                name="template.maintenancePeriod"
-                type="number"
-                onChange={handleChange}
-              /> */}
-              {/* <FormInput
-                label="Template Type"
-                name="template.templateType"
-                onChange={handleChange}
-              /> */}
-              {/* <FormInput
-                label="Category Name"
-                name="template.category.name"
-                onChange={handleChange}
-              /> */}
             </div>
 
             <div className="form-column">
-              <FormInput label="Number" name="number" onChange={handleChange} />
-              {/* <FormInput
-                label="Identification"
-                name="template.identification"
-                onChange={handleChange}
-              /> */}
-              {/* <FormInput
-                label="Brand"
-                name="template.brand"
+              <FormInput
+                label="Data de Uso"
+                name="dateOfUse"
+                type="date"
+                value={formData.dateOfUse}
                 onChange={handleChange}
               />
               <FormInput
-                label="Period Type"
-                name="template.periodType"
-                onChange={handleChange}
-              /> */}
-              <FormInput
-                label="Template ID"
-                name="template.id"
-                type="number"
+                label="Próxima Calibração"
+                name="nextCalibrationDate"
+                type="date"
+                value={formData.nextCalibrationDate}
                 onChange={handleChange}
               />
-              {/* <FormInput
-                label="Category ID"
-                name="template.category.id"
-                type="number"
+              <FormInput
+                label="Próxima Manutenção"
+                name="nextMaintenanceDate"
+                type="date"
+                value={formData.nextMaintenanceDate}
                 onChange={handleChange}
-              /> */}
+              />
+              <FormInput
+                label="Laboratório (ID)"
+                name="laboratoryId"
+                type="number"
+                value={formData.laboratoryId}
+                onChange={handleChange}
+              />
             </div>
           </div>
 

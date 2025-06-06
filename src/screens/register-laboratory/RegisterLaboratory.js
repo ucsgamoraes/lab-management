@@ -1,5 +1,4 @@
-import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../register-equipment/RegisterEquipment.css"; // reutilizando o CSS existente
 import { SideBar } from "../../components/SideBar/SideBar";
 import FormInput from "../../components/FormInput/FormInput";
@@ -10,6 +9,9 @@ function RegisterLaboratory() {
     room: "",
     blockId: 0,
   });
+
+  const [blocks, setBlocks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +34,23 @@ function RegisterLaboratory() {
     }
   };
 
+  const getBlocks = async () => {
+    try {
+      const response = await api.get("/block");
+      setBlocks(response.data);
+      setLoading(false);
+      console.log("Blocos carregados:", response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao carregar blocos: " + error.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getBlocks();
+  }, []);
+
   return (
     <div className="register-equipment-container">
       <SideBar />
@@ -46,13 +65,30 @@ function RegisterLaboratory() {
                 onChange={handleChange}
                 required
               />
-              <FormInput
-                label="Bloco"
-                name="blockId"
-                type="number"
-                onChange={handleChange}
-                required
-              />
+              
+              <div className="form-group">
+                <label htmlFor="blockId" className="form-label">
+                  Bloco *
+                </label>
+                <select
+                  id="blockId"
+                  name="blockId"
+                  value={formData.blockId}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                  disabled={loading}
+                >
+                  <option value="">
+                    {loading ? "Carregando blocos..." : "Selecione um bloco"}
+                  </option>
+                  {blocks.map((block) => (
+                    <option key={block.id} value={block.id}>
+                      {block.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="form-column"></div>
