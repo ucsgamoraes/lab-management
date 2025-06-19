@@ -14,6 +14,8 @@ import {
   faRightFromBracket,
   faChevronDown,
   faChevronRight,
+  faWrench,
+  faLocationDot,
   faVial,
   faTags
 } from "@fortawesome/free-solid-svg-icons";
@@ -112,6 +114,22 @@ export const SideBar = () => {
               >
                 <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} />
                 Cadastrar Usuário
+              </button>
+
+              <button
+                className="submenu-btn"
+                onClick={() => navigateToScreen("/register-model")}
+              >
+                <FontAwesomeIcon icon={faWrench} style={{ marginRight: "8px" }} />
+                Cadastrar Modelo
+              </button>
+
+              <button
+                className="submenu-btn"
+                onClick={() => navigateToScreen("/register-block")}
+              >
+                <FontAwesomeIcon icon={faLocationDot} style={{ marginRight: "8px" }} />
+                Cadastrar Bloco
               </button>
             </div>
           )}
