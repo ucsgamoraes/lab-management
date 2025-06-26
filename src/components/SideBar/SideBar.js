@@ -17,7 +17,7 @@ import {
   faWrench,
   faLocationDot,
   faVial,
-  faTags
+  faTags,
 } from "@fortawesome/free-solid-svg-icons";
 
 export const SideBar = () => {
@@ -58,6 +58,13 @@ export const SideBar = () => {
               style={{ marginRight: "10px" }}
             />
             Dashboard
+          </button>
+          <button
+            className="menu-btn"
+            onClick={() => navigateToScreen("/equipments")}
+          >
+            <FontAwesomeIcon icon={faToolbox} style={{ marginRight: "10px" }} />
+            Equipamentos
           </button>
 
           <button className="menu-btn" onClick={toggleCadastros}>
@@ -120,7 +127,10 @@ export const SideBar = () => {
                 className="submenu-btn"
                 onClick={() => navigateToScreen("/register-model")}
               >
-                <FontAwesomeIcon icon={faWrench} style={{ marginRight: "8px" }} />
+                <FontAwesomeIcon
+                  icon={faWrench}
+                  style={{ marginRight: "8px" }}
+                />
                 Cadastrar Modelo
               </button>
 
@@ -128,7 +138,10 @@ export const SideBar = () => {
                 className="submenu-btn"
                 onClick={() => navigateToScreen("/register-block")}
               >
-                <FontAwesomeIcon icon={faLocationDot} style={{ marginRight: "8px" }} />
+                <FontAwesomeIcon
+                  icon={faLocationDot}
+                  style={{ marginRight: "8px" }}
+                />
                 Cadastrar Bloco
               </button>
             </div>

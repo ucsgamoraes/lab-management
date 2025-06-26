@@ -10,6 +10,7 @@ import RegisterCategory from './screens/register-category/RegisterCategory';
 import { RegisterUser } from './screens/register-user/RegisterUser';
 import { RegisterModel } from './screens/register-model/RegisterModel';
 import { RegisterBlock } from './screens/register-block/RegisterBlock';
+import { EquipmentsList } from './screens/equipments/EquipmentsList';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/register-equipment" element={<RegisterEquipment />} />
+        <Route path="/equipments" element={<EquipmentsList />} />
         <Route path="/register-event" element={<RegisterEvent />} />
         <Route path="/register-category" element={<RegisterCategory />} />
         <Route path="/register-laboratory" element={<RegisterLaboratory />} />
