@@ -1,0 +1,55 @@
+.alerta-expiracao {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: #fee2e2;
+  color: #7f1d1d;
+  border: 1px solid #fecaca;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alerta-expiracao .left {
+  display: flex;
+  gap: 16px;
+}
+
+.alerta-expiracao .left h2 {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.alerta-expiracao .actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.alerta-expiracao .actions button:first-child {
+  background-color: #dc2626;
+  color: white;
+  padding: 4px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.alerta-expiracao .actions button:first-child:hover {
+  background-color: #b91c1c;
+}
+
+.alerta-expiracao .actions button:last-child {
+  background: none;
+  border: none;
+  color: #b91c1c;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+}

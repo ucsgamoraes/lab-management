@@ -4,6 +4,7 @@ import "../register-equipment/RegisterEquipment.css"; // reutilizando o CSS exis
 import { SideBar } from "../../components/SideBar/SideBar";
 import FormInput from "../../components/FormInput/FormInput";
 import api from "../../services/api";
+import AlertaExpiracao from "../../components/AlertaExpiracao/AlertaExpiracao";
 
 function RegisterCategory() {
   const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ function RegisterCategory() {
     <div className="register-equipment-container">
       <SideBar />
       <div className="main-content">
+        <AlertaExpiracao></AlertaExpiracao>
         <h1 className="form-title">Cadastro de Categoria</h1>
         <form className="equipment-form" onSubmit={handleSubmit}>
           <div className="form-columns">

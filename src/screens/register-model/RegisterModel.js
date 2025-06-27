@@ -3,6 +3,7 @@ import { useState } from "react";
 import "../register-equipment/RegisterEquipment.css";
 import { SideBar } from "../../components/SideBar/SideBar";
 import FormInput from "../../components/FormInput/FormInput";
+import AlertaExpiracao from "../../components/AlertaExpiracao/AlertaExpiracao";
 
 function RegisterModel() {
   const [formData, setFormData] = useState({
@@ -38,6 +39,7 @@ function RegisterModel() {
     <div className="register-equipment-container">
       <SideBar />
       <div className="main-content">
+        <AlertaExpiracao></AlertaExpiracao>
         <h1 className="form-title">Cadastro de Modelo</h1>
         <form className="equipment-form" onSubmit={handleSubmit}>
           <div className="form-columns">
