@@ -105,7 +105,7 @@ function RegisterModel() {
 
     try {
       const response = await api.post("/template", formData);
-      alert("Template cadastrado com sucesso!");
+      alert("Modelo cadastrado com sucesso!");
       console.log(response.data);
       loadTemplates();
       setShowModal(false);
@@ -219,7 +219,7 @@ function RegisterModel() {
     <div className="register-equipment-container">
       <SideBar />
       <div className="main-content">
-        <h1 className="form-title">Gestão de Templates</h1>
+        <h1 className="form-title">Gestão de Modelos</h1>
 
         {/* Seção de Filtros */}
         <div style={filterStyles.filterContainer}>
@@ -237,7 +237,7 @@ function RegisterModel() {
             </div>
 
             <div style={filterStyles.filterInput}>
-              <label style={filterStyles.label}>Tipo de Template:</label>
+              <label style={filterStyles.label}>Tipo de Modelo:</label>
               <select
                 name="templateType"
                 value={filters.templateType}
@@ -281,12 +281,12 @@ function RegisterModel() {
         {/* Lista de Templates */}
         <div className="templates-list">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h3>Templates Encontrados ({filteredTemplates.length})</h3>
+            <h3>Modelos Encontrados ({filteredTemplates.length})</h3>
             <button
               onClick={() => setShowModal(true)}
               style={{...filterStyles.button, ...filterStyles.successButton}}
             >
-              Cadastrar Template
+              Cadastrar Modelo
             </button>
           </div>
 
@@ -353,7 +353,7 @@ function RegisterModel() {
               maxHeight: '90%',
               overflowY: 'auto'
             }}>
-              <h3>Cadastrar Novo Template</h3>
+              <h3>Cadastrar Novo Modelo</h3>
               <form onSubmit={handleSubmit}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '20px' }}>
                   <div>
@@ -485,7 +485,7 @@ function RegisterModel() {
                     type="submit"
                     style={{ padding: '12px 30px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '500' }}
                   >
-                    Cadastrar Template
+                    Cadastrar Modelo
                   </button>
                   <button
                     type="button"
@@ -524,7 +524,7 @@ function RegisterModel() {
               overflowY: 'auto'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3>Detalhes do Template</h3>
+                <h3>Detalhes do Modelo</h3>
                 <button
                   onClick={() => setShowDetailModal(false)}
                   style={{
