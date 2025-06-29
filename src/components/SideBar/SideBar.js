@@ -156,16 +156,6 @@ export const SideBar = () => {
           )}
 
           <button
-            className={`menu-btn ${isActive('/dashboard') ? 'active' : ''}`}
-            onClick={() => navigateToScreen("/dashboard")}
-          >
-            <FontAwesomeIcon
-              icon={faChartLine}
-              style={{ marginRight: "10px" }}
-            />
-            Dashboard
-          </button>
-          <button
             className={`menu-btn ${isActive('/equipments') ? 'active' : ''}`}
             onClick={() => navigateToScreen("/equipments")}
           >
@@ -181,7 +171,7 @@ export const SideBar = () => {
             Relatório Laboratório
           </button>
 
-          {!isAdmin && (
+          {isAdmin && (
             <>
               <button
                 className={`menu-btn ${cadastroRoutes.includes(location.pathname) ? 'active' : ''}`}
@@ -221,13 +211,6 @@ export const SideBar = () => {
                     Cadastrar Eventos
                   </button>
                   <button
-                    className={`submenu-btn ${isActive('/register-laboratory') ? 'active' : ''}`}
-                    onClick={() => navigateToScreen("/register-laboratory")}
-                  >
-                    <FontAwesomeIcon icon={faVial} style={{ marginRight: "8px" }} />
-                    Cadastrar Laboratório
-                  </button>
-                  <button
                     className={`submenu-btn ${isActive('/register-category') ? 'active' : ''}`}
                     onClick={() => navigateToScreen("/register-category")}
                   >
@@ -261,30 +244,16 @@ export const SideBar = () => {
                       icon={faLocationDot}
                       style={{ marginRight: "8px" }}
                     />
-                    Cadastrar Bloco
+                    Cadastrar Bloco e Laboratorio
                   </button>
                 </div>
               )}
             </>
           )}
-
           <button
-            className={`menu-btn ${isActive('/profile') ? 'active' : ''}`}
-            onClick={() => navigateToScreen("/profile")}
+            className="menu-btn"
+            onClick={() => navigateToScreen("/signin")}
           >
-            <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} />
-            Perfil
-          </button>
-
-          <button
-            className={`menu-btn ${isActive('/settings') ? 'active' : ''}`}
-            onClick={() => navigateToScreen("/settings")}
-          >
-            <FontAwesomeIcon icon={faGear} style={{ marginRight: "10px" }} />
-            Configurações
-          </button>
-
-          <button className="menu-btn">
             <FontAwesomeIcon
               icon={faRightFromBracket}
               style={{ marginRight: "10px" }}
