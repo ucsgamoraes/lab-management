@@ -18,6 +18,8 @@ import {
   faLocationDot,
   faVial,
   faTags,
+  faCrown,
+  faUserTie,
 } from "@fortawesome/free-solid-svg-icons";
 
 export const SideBar = () => {
@@ -35,14 +37,34 @@ export const SideBar = () => {
   ];
 
   const [isOpen, setIsOpen] = useState(true);
-  const [cadastrosOpen, setCadastrosOpen] = useState(() =>
-    cadastroRoutes.includes(location.pathname)
-  );
+  // Menu de cadastros fechado por padrão
+  const [cadastrosOpen, setCadastrosOpen] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+
+  // Função para buscar informações do usuário no localStorage
+  const getUserInfo = () => {
+    try {
+      const userData = localStorage.getItem('token');
+      if (userData) {
+        return JSON.parse(userData);
+      }
+      return null;
+    } catch (error) {
+      console.error('Erro ao buscar dados do usuário:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
-    const shouldBeOpen = cadastroRoutes.includes(location.pathname);
-    setCadastrosOpen(shouldBeOpen);
-  }, [location.pathname]);
+    // Buscar informações do usuário ao montar o componente
+    const user = getUserInfo();
+    setUserInfo(user);
+    setIsLoadingUser(false);
+  }, []);
+
+  // Removido o useEffect que mudava automaticamente o estado do cadastrosOpen
+  // para evitar o flicker durante a navegação
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -57,6 +79,46 @@ export const SideBar = () => {
   };
 
   const isActive = (path) => location.pathname === path;
+
+  // Verificar se o usuário é admin
+  const isAdmin = userInfo?.userType === 'ADMIN';
+
+  // Função para obter o ícone do tipo de usuário
+  const getUserTypeIcon = (userType) => {
+    switch (userType) {
+      case 'ADMIN':
+        return faCrown;
+      case 'RESPONSAVEL':
+        return faUserTie;
+      default:
+        return faUser;
+    }
+  };
+
+  // Função para obter o texto do tipo de usuário
+  const getUserTypeText = (userType) => {
+    switch (userType) {
+      case 'ADMIN':
+        return 'Administrador';
+      case 'RESPONSAVEL':
+        return 'Responsável';
+      default:
+        return 'Responsável';
+    }
+  };
+
+  // Componente Skeleton para o card do usuário
+  const UserInfoSkeleton = () => (
+    <div className="user-info user-info-skeleton">
+      <div className="user-type">
+        <div className="skeleton-icon"></div>
+        <div className="skeleton-text skeleton-user-type"></div>
+      </div>
+      <div className="user-name">
+        <div className="skeleton-text skeleton-user-name"></div>
+      </div>
+    </div>
+  );
 
   return (
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
@@ -73,6 +135,26 @@ export const SideBar = () => {
 
       {isOpen && (
         <div className="menu">
+          {/* Informações do usuário no topo com skeleton */}
+          {isLoadingUser ? (
+            <UserInfoSkeleton />
+          ) : (
+            userInfo && (
+              <div className="user-info">
+                <div className="user-type">
+                  <FontAwesomeIcon
+                    icon={getUserTypeIcon(userInfo.userType)}
+                    style={{ marginRight: "8px", color: isAdmin ? "#gold" : "#007bff" }}
+                  />
+                  <span>{getUserTypeText(userInfo.userType)}</span>
+                </div>
+                <div className="user-name">
+                  {userInfo.name}
+                </div>
+              </div>
+            )
+          )}
+
           <button
             className={`menu-btn ${isActive('/dashboard') ? 'active' : ''}`}
             onClick={() => navigateToScreen("/dashboard")}
@@ -99,92 +181,105 @@ export const SideBar = () => {
             Relatório Laboratório
           </button>
 
-          <button className={`menu-btn ${cadastrosOpen ? 'active' : ''}`} onClick={toggleCadastros}>
-            <FontAwesomeIcon
-              icon={faFolderPlus}
-              style={{ marginRight: "10px" }}
-            />
-            Cadastros
-            <FontAwesomeIcon
-              icon={cadastrosOpen ? faChevronDown : faChevronRight}
-              style={{ marginLeft: "5px" }}
-            />
-          </button>
-
-          {cadastrosOpen && (
-            <div className="submenu">
+          {!isAdmin && (
+            <>
               <button
-                className={`submenu-btn ${isActive('/register-equipment') ? 'active' : ''}`}
-                onClick={() => navigateToScreen("/register-equipment")}
+                className={`menu-btn ${cadastroRoutes.includes(location.pathname) ? 'active' : ''}`}
+                onClick={toggleCadastros}
               >
                 <FontAwesomeIcon
-                  icon={faToolbox}
-                  style={{ marginRight: "8px" }}
+                  icon={faFolderPlus}
+                  style={{ marginRight: "10px" }}
                 />
-                Cadastrar Equipamento
-              </button>
-              <button
-                className={`submenu-btn ${isActive('/register-event') ? 'active' : ''}`}
-                onClick={() => navigateToScreen("/register-event")}
-              >
+                Cadastros
                 <FontAwesomeIcon
-                  icon={faCalendarPlus}
-                  style={{ marginRight: "8px" }}
+                  icon={cadastrosOpen ? faChevronDown : faChevronRight}
+                  style={{ marginLeft: "5px" }}
                 />
-                Cadastrar Eventos
-              </button>
-              <button
-                className={`submenu-btn ${isActive('/register-laboratory') ? 'active' : ''}`}
-                onClick={() => navigateToScreen("/register-laboratory")}
-              >
-                <FontAwesomeIcon icon={faVial} style={{ marginRight: "8px" }} />
-                Cadastrar Laboratório
-              </button>
-              <button
-                className={`submenu-btn ${isActive('/register-category') ? 'active' : ''}`}
-                onClick={() => navigateToScreen("/register-category")}
-              >
-                <FontAwesomeIcon icon={faTags} style={{ marginRight: "8px" }} />
-                Cadastrar Categoria
-              </button>
-              <button
-                className={`submenu-btn ${isActive('/register-user') ? 'active' : ''}`}
-                onClick={() => navigateToScreen("/register-user")}
-              >
-                <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} />
-                Cadastrar Usuário
               </button>
 
-              <button
-                className={`submenu-btn ${isActive('/register-model') ? 'active' : ''}`}
-                onClick={() => navigateToScreen("/register-model")}
-              >
-                <FontAwesomeIcon
-                  icon={faWrench}
-                  style={{ marginRight: "8px" }}
-                />
-                Cadastrar Modelo
-              </button>
+              {cadastrosOpen && (
+                <div className="submenu">
+                  <button
+                    className={`submenu-btn ${isActive('/register-equipment') ? 'active' : ''}`}
+                    onClick={() => navigateToScreen("/register-equipment")}
+                  >
+                    <FontAwesomeIcon
+                      icon={faToolbox}
+                      style={{ marginRight: "8px" }}
+                    />
+                    Cadastrar Equipamento
+                  </button>
+                  <button
+                    className={`submenu-btn ${isActive('/register-event') ? 'active' : ''}`}
+                    onClick={() => navigateToScreen("/register-event")}
+                  >
+                    <FontAwesomeIcon
+                      icon={faCalendarPlus}
+                      style={{ marginRight: "8px" }}
+                    />
+                    Cadastrar Eventos
+                  </button>
+                  <button
+                    className={`submenu-btn ${isActive('/register-laboratory') ? 'active' : ''}`}
+                    onClick={() => navigateToScreen("/register-laboratory")}
+                  >
+                    <FontAwesomeIcon icon={faVial} style={{ marginRight: "8px" }} />
+                    Cadastrar Laboratório
+                  </button>
+                  <button
+                    className={`submenu-btn ${isActive('/register-category') ? 'active' : ''}`}
+                    onClick={() => navigateToScreen("/register-category")}
+                  >
+                    <FontAwesomeIcon icon={faTags} style={{ marginRight: "8px" }} />
+                    Cadastrar Categoria
+                  </button>
+                  <button
+                    className={`submenu-btn ${isActive('/register-user') ? 'active' : ''}`}
+                    onClick={() => navigateToScreen("/register-user")}
+                  >
+                    <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} />
+                    Cadastrar Usuário
+                  </button>
 
-              <button
-                className={`submenu-btn ${isActive('/register-block') ? 'active' : ''}`}
-                onClick={() => navigateToScreen("/register-block")}
-              >
-                <FontAwesomeIcon
-                  icon={faLocationDot}
-                  style={{ marginRight: "8px" }}
-                />
-                Cadastrar Bloco
-              </button>
-            </div>
+                  <button
+                    className={`submenu-btn ${isActive('/register-model') ? 'active' : ''}`}
+                    onClick={() => navigateToScreen("/register-model")}
+                  >
+                    <FontAwesomeIcon
+                      icon={faWrench}
+                      style={{ marginRight: "8px" }}
+                    />
+                    Cadastrar Modelo
+                  </button>
+
+                  <button
+                    className={`submenu-btn ${isActive('/register-block') ? 'active' : ''}`}
+                    onClick={() => navigateToScreen("/register-block")}
+                  >
+                    <FontAwesomeIcon
+                      icon={faLocationDot}
+                      style={{ marginRight: "8px" }}
+                    />
+                    Cadastrar Bloco
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
-          <button className={`menu-btn ${isActive('/profile') ? 'active' : ''}`}>
+          <button
+            className={`menu-btn ${isActive('/profile') ? 'active' : ''}`}
+            onClick={() => navigateToScreen("/profile")}
+          >
             <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} />
             Perfil
           </button>
 
-          <button className={`menu-btn ${isActive('/settings') ? 'active' : ''}`}>
+          <button
+            className={`menu-btn ${isActive('/settings') ? 'active' : ''}`}
+            onClick={() => navigateToScreen("/settings")}
+          >
             <FontAwesomeIcon icon={faGear} style={{ marginRight: "10px" }} />
             Configurações
           </button>
