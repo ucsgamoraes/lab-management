@@ -1,7 +1,7 @@
 // ====EVENT=========
 export const EventType = {
   CALIBRATION: { value: 1, label: "CALIBRACAO" },
-  MAINTENANCE: { value: 2, label: "MANUTENCAO" },
+  MAINTENANCE: { value: 2, label: "MANUTENÇAO" },
   QUALIFICATIONS: { value: 3, label: "QUALIFICACAO" },
   CHECKS: { value: 4, label: "CHECAGEM" },
   OTHER: { value: 5, label: "OUTROS" },

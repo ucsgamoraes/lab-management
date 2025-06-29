@@ -89,26 +89,6 @@ export const SideBar = () => {
             <div className="submenu">
               <button
                 className="submenu-btn"
-                onClick={() => navigateToScreen("/register-equipment")}
-              >
-                <FontAwesomeIcon
-                  icon={faToolbox}
-                  style={{ marginRight: "8px" }}
-                />
-                Cadastrar Equipamento
-              </button>
-              <button
-                className="submenu-btn"
-                onClick={() => navigateToScreen("/register-event")}
-              >
-                <FontAwesomeIcon
-                  icon={faCalendarPlus}
-                  style={{ marginRight: "8px" }}
-                />
-                Cadastrar Eventos
-              </button>
-              <button
-                className="submenu-btn"
                 onClick={() => navigateToScreen("/register-laboratory")}
               >
                 <FontAwesomeIcon icon={faVial} style={{ marginRight: "8px" }} />

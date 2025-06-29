@@ -5,19 +5,21 @@ import FormInput from "../../components/FormInput/FormInput";
 import api from "../../services/api";
 
 function RegisterEquipment() {
+  const [templates, setTemplates] = useState([]);
+
   const [formData, setFormData] = useState({
     identification: "",
     propertyNumber: "",
     serialNumber: "",
     equipmentTag: "",
     dateOfUse: "",
+    description: "",
+    status: "",
     nextCalibrationDate: "",
     nextMaintenanceDate: "",
     blockId: "", // Adicionado blockId ao formData
     laboratoryId: 0,
-    template: {
-      id: 0,
-    },
+    templateId: "",
   });
 
   const [blocks, setBlocks] = useState([]);
@@ -36,8 +38,22 @@ function RegisterEquipment() {
     }
   };
 
+  const getTemplates = async () => {
+    try {
+      const response = await api.get("/template");
+      setTemplates(response.data);
+      setLoading(false);
+      console.log("Modelos carregados:", response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao carregar modelos: " + error.message);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     getBlocks();
+    getTemplates();
   }, []);
 
   // Função para obter laboratórios do bloco selecionado
@@ -46,24 +62,23 @@ function RegisterEquipment() {
     const selectedBlock = blocks.find((block) => block.id == blockId);
     return selectedBlock ? selectedBlock.laboratories : [];
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name.startsWith("template.")) {
-      const field = name.split(".")[1];
+    if (name === "templateId") {
+      const selectedTemplate = templates.find(
+        (template) => template.id === parseInt(value)
+      );
+
       setFormData((prev) => ({
         ...prev,
-        template: {
-          ...prev.template,
-          [field]: value,
-        },
+        templateId: value,
+        description: selectedTemplate ? selectedTemplate.description : "",
       }));
     } else {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
-        // Se mudou o bloco, limpa o laboratório selecionado
         ...(name === "blockId" && { laboratoryId: 0 }),
       }));
     }
@@ -77,12 +92,14 @@ function RegisterEquipment() {
         identification: formData.identification,
         propertyNumber: formData.propertyNumber,
         serialNumber: formData.serialNumber,
+        description: formData.description,
         equipmentTag: formData.equipmentTag,
         dateOfUse: formData.dateOfUse,
+        status: formData.status,
         nextCalibrationDate: formData.nextCalibrationDate,
         nextMaintenanceDate: formData.nextMaintenanceDate,
         laboratoryId: parseInt(formData.laboratoryId),
-        templateId: parseInt(formData.template.id),
+        templateId: parseInt(formData.templateId),
       });
       alert("Equipamento cadastrado com sucesso!");
       console.log(response.data);
@@ -106,13 +123,29 @@ function RegisterEquipment() {
                 value={formData.identification}
                 onChange={handleChange}
               />
-              <FormInput
-                label="Template (ID)"
-                name="template.id"
-                type="number"
-                value={formData.template.id}
-                onChange={handleChange}
-              />
+              <div className="form-group">
+                <label htmlFor="templateId" className="form-label">
+                  Modelo *
+                </label>
+                <select
+                  id="templateId"
+                  name="templateId"
+                  value={formData.templateId}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                  disabled={loading}
+                >
+                  <option value="">
+                    {loading ? "Carregando modelos..." : "Selecione um modelo"}
+                  </option>
+                  {templates.map((template) => (
+                    <option key={template.id} value={template.id}>
+                      {template.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <FormInput
                 label="Número do Patrimônio"
                 name="propertyNumber"
@@ -131,6 +164,20 @@ function RegisterEquipment() {
                 value={formData.equipmentTag}
                 onChange={handleChange}
               />
+              <div className="form-group">
+                <label htmlFor="description" className="form-label">
+                  Descrição
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="form-textarea"
+                  placeholder="Digite a descrição do equipamento..."
+                  rows={4}
+                />
+              </div>
             </div>
 
             <div className="form-column">
@@ -141,6 +188,24 @@ function RegisterEquipment() {
                 value={formData.dateOfUse}
                 onChange={handleChange}
               />
+              <div className="form-group">
+                <label htmlFor="status" className="form-label">
+                  Status
+                </label>
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                  disabled={loading}
+                >
+                  <option value="">Selecione o status</option>
+                  <option value={"AVAILABLE"}>Disponível</option>
+                  <option value={"UNAVAILABLE"}>Indisponível</option>
+                </select>
+              </div>
               <FormInput
                 label="Próxima Calibração"
                 name="nextCalibrationDate"
@@ -203,7 +268,7 @@ function RegisterEquipment() {
                   {getLaboratoriesByBlock(formData.blockId).map(
                     (laboratory) => (
                       <option key={laboratory.id} value={laboratory.id}>
-                        {laboratory.room}
+                        {laboratory.roomName}
                       </option>
                     )
                   )}
