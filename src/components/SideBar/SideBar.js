@@ -67,6 +67,12 @@ export const SideBar = () => {
             Equipamentos
           </button>
 
+          <button onClick={() => navigateToScreen("/laboratory-report")} className="menu-btn">
+
+          <FontAwesomeIcon icon={faToolbox} style={{ marginRight: "10px" }} />
+                      Relatório Laboratório
+          </button>
+
           <button className="menu-btn" onClick={toggleCadastros}>
             <FontAwesomeIcon
               icon={faFolderPlus}
