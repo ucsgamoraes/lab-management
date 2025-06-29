@@ -1,0 +1,185 @@
+/* NotificationBar.css - Versão Corrigida */
+.notification-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ff4d4f;
+  color: white;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+  animation: slideDown 0.3s ease-out;
+  /* Garantir que não ocupe espaço se estiver vazia */
+  min-height: 0;
+}
+
+/* IMPORTANTE: Só aplicar estilos se o conteúdo existir */
+.notification-bar:empty {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 15px;
+  /* Garantir altura mínima apenas quando há conteúdo */
+  min-height: 50px;
+}
+
+.notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.notification-text {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.notification-text strong {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.expired-warning {
+  color: #ffebee;
+  font-weight: 500;
+}
+
+.soon-expire-warning {
+  color: #fff3e0;
+  font-weight: 500;
+}
+
+.notification-button {
+  background: white;
+  color: #ff6b6b;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.notification-button:hover {
+  background: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.notification-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .notification-content {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .notification-text {
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .notification-button {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notification-content {
+    padding: 12px;
+  }
+
+  .notification-icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  .notification-text {
+    font-size: 12px;
+  }
+
+  .notification-text strong {
+    font-size: 13px;
+  }
+
+  .notification-button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Ajuste para quando a notification bar estiver presente */
+/* IMPORTANTE: Só aplicar quando a classe estiver ativa */
+body.notification-active {
+  padding-top: 70px !important;
+}
+
+@media (max-width: 768px) {
+  body.notification-active {
+    padding-top: 90px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body.notification-active {
+    padding-top: 100px !important;
+  }
+}
+
+/* Reset para garantir que não há padding quando não deveria ter */
+body:not(.notification-active) {
+  padding-top: 0 !important;
+}

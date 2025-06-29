@@ -9,10 +9,9 @@ function Home() {
   const [error, setError] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
 
-  // Função para obter informações do usuário do localStorage
   const getUserInfo = () => {
     try {
-      const userData = localStorage.getItem('token'); // ou a chave que você usa
+      const userData = localStorage.getItem('token');
       if (userData) {
         return JSON.parse(userData);
       }
@@ -22,19 +21,16 @@ function Home() {
     return null;
   };
 
-  // Verificar se o usuário é RESPONSIBLE
   const isResponsible = () => {
     return userInfo?.userType === 'RESPONSIBLE';
   };
 
   useEffect(() => {
-    // Obter informações do usuário ao carregar o componente
     const user = getUserInfo();
     setUserInfo(user);
   }, []);
 
   useEffect(() => {
-    // Buscar equipamentos quando userInfo estiver disponível
     if (userInfo !== null) {
       fetchEquipments();
     }
@@ -46,8 +42,6 @@ function Home() {
       setError(null);
 
       let endpoint = "/equipment/expiration";
-
-      // Se o usuário é RESPONSIBLE e tem laboratoryId, adicionar como parâmetro
       if (isResponsible() && userInfo?.laboratoryId) {
         endpoint += `?id=${userInfo.laboratoryId}`;
       }
@@ -82,61 +76,50 @@ function Home() {
           {isResponsible() && <small> - Filtrados por seu laboratório</small>}
         </h2>
         <div className="red-box">
-          {equipments.map((equipment, index) => (
-            <div key={equipment.id} className={`equipment-item ${equipment.daysExpiration === -1 ? 'expired' : ''}`}>
-              <span className="item-number">{index + 1}</span>
-              <span className="item-content">
-                {equipment.identification || 'N/A'} - {equipment.description || 'N/A'} -
-                Status: {equipment.equipmentStatusType || 'N/A'} -
-                Série: {equipment.serialNumber || 'N/A'} -
-                Próxima Calibração: {equipment.nextCalibrationDate ? new Date(equipment.nextCalibrationDate).toLocaleDateString('pt-BR') : 'N/A'} -
-                {equipment.daysExpiration !== null ?
-                  (equipment.daysExpiration === -1 ?
-                    '⚠️ EQUIPAMENTO JÁ EXPIROU' :
-                    `Expira em ${equipment.daysExpiration} dias`
-                  ) :
-                  'Expiração: N/A'
-                }
-                {equipment.template && equipment.template.brand && ` - Marca: ${equipment.template.brand}`}
-                {equipment.laboratory && ` - Lab: ${equipment.laboratory.roomNumber} - ${equipment.laboratory.roomName}`}
-              </span>
-            </div>
-          ))}
+          {equipments.map((equipment, index) => {
+            const isExpired = equipment.daysExpiration === -1;
+            const isWarning = equipment.daysExpiration > -1 && equipment.daysExpiration <= 30;
+
+            return (
+              <div
+                key={equipment.id}
+                className={`equipment-item ${isExpired ? 'expired' : ''}`}
+              >
+                <div className="item-header">
+                  <span>{index + 1}. {equipment.identification || 'Sem Identificação'}</span>
+                  {isExpired && (
+                    <span className="item-badge badge-expired">⚠️ Expirado</span>
+                  )}
+                  {isWarning && !isExpired && (
+                    <span className="item-badge badge-warning">⏳ Expira em {equipment.daysExpiration} dias</span>
+                  )}
+                </div>
+
+                <div className="item-meta">
+                  <span>{equipment.description || 'Sem descrição'}</span>
+                  <span>Status: {equipment.equipmentStatusType || 'N/A'}</span>
+                  <span>Série: {equipment.serialNumber || 'N/A'}</span>
+                  <span>
+                    Calibração: {equipment.nextCalibrationDate ?
+                      new Date(equipment.nextCalibrationDate).toLocaleDateString('pt-BR') :
+                      'N/A'}
+                  </span>
+                  {equipment.template?.brand && <span>Marca: {equipment.template.brand}</span>}
+                  {equipment.laboratory && (
+                    <span>Lab: {equipment.laboratory.roomNumber} - {equipment.laboratory.roomName}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
   };
 
-  // Tratamento de erro similar ao LaboratoryReport
-  if (error && equipments.length === 0 && !loading) {
-    return (
-      <div className="home-container">
-        <SideBar />
-        <div className="main-content">
-          <div className="error-container">
-            <div className="error-message">
-              <h2>Erro ao carregar dados</h2>
-              <p>{error}</p>
-              <button
-                className="retry-btn"
-                onClick={() => {
-                  setError(null);
-                  fetchEquipments();
-                }}
-              >
-                Tentar Novamente
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="home-container">
       <SideBar />
-
       <div className="main-content">
         <h1>
           Bem-vindo à Home
@@ -144,9 +127,6 @@ function Home() {
             <small> - Usuário Responsável (Lab ID: {userInfo.laboratoryId})</small>
           )}
         </h1>
-        <button onClick={fetchEquipments} className="refresh-btn" disabled={loading}>
-          {loading ? 'Carregando...' : 'Atualizar Equipamentos'}
-        </button>
         {renderEquipmentList()}
       </div>
     </div>
