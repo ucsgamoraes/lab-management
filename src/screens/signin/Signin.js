@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../../services/api';
 import './Signin.css';
 
 export default function Signin() {
@@ -6,39 +7,38 @@ export default function Signin() {
     email: '',
     password: '',
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      fetch('https://laboratorio-5vcf.onrender.com/user/login',
-        {
-          method: "POST",
-          body: JSON.stringify(credentials),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((r) => {
-        return r.text()
+      const response = await api.post('/user/login', credentials);
+      localStorage.setItem('token', JSON.stringify(response.data));
+      window.location = '/home';
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        setError('E-mail ou senha inválidos.');
+      } else {
+        setError('Erro ao conectar com o servidor.');
       }
-      ).then((r) => {
-        localStorage.setItem("token", r);
-        window.location = "/home";
-      });
-    } catch (error) {
-      alert(1);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="signin-container">
-
+    <div className="signin-content">
       <form className="signin-form" onSubmit={handleSubmit}>
         <h2>Entrar</h2>
+        {error && <div className="error-message">{error}</div>}
         <input
           type="email"
           name="email"
@@ -55,7 +55,9 @@ export default function Signin() {
           onChange={handleChange}
           required
         />
-        <button type="submit">Entrar</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
       </form>
     </div>
   );

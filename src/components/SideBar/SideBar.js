@@ -201,16 +201,6 @@ export const SideBar = () => {
                     Cadastrar Equipamento
                   </button>
                   <button
-                    className={`submenu-btn ${isActive('/register-event') ? 'active' : ''}`}
-                    onClick={() => navigateToScreen("/register-event")}
-                  >
-                    <FontAwesomeIcon
-                      icon={faCalendarPlus}
-                      style={{ marginRight: "8px" }}
-                    />
-                    Cadastrar Eventos
-                  </button>
-                  <button
                     className={`submenu-btn ${isActive('/register-category') ? 'active' : ''}`}
                     onClick={() => navigateToScreen("/register-category")}
                   >
