@@ -8,6 +8,7 @@ function RegisterLaboratory() {
   const [formData, setFormData] = useState({
     room: "",
     blockId: 0,
+    name: 0,
   });
 
   const [blocks, setBlocks] = useState([]);
@@ -59,13 +60,6 @@ function RegisterLaboratory() {
         <form className="equipment-form" onSubmit={handleSubmit}>
           <div className="form-columns">
             <div className="form-column">
-              <FormInput
-                label="Sala"
-                name="room"
-                onChange={handleChange}
-                required
-              />
-              
               <div className="form-group">
                 <label htmlFor="blockId" className="form-label">
                   Bloco *
@@ -89,6 +83,18 @@ function RegisterLaboratory() {
                   ))}
                 </select>
               </div>
+              <FormInput
+                label="Sala"
+                name="room"
+                onChange={handleChange}
+                required
+              />
+              <FormInput
+                label="Nome"
+                name="name"
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div className="form-column"></div>

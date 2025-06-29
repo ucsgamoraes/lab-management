@@ -2,8 +2,17 @@ import { useState, useEffect } from "react";
 import { SideBar } from "../../components/SideBar/SideBar";
 import api from "../../services/api";
 import "./EquipmentsList.css";
+import { useNavigate } from "react-router-dom";
 
 const EquipmentCard = ({ equipment }) => {
+  const navigate = useNavigate();
+
+  const navigateToRegisterEvent = () => {
+    navigate("/register-event", {
+      state: { equipmentId: equipment.id },
+    });
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case "AVAILABLE":
@@ -153,7 +162,12 @@ const EquipmentCard = ({ equipment }) => {
       <div className="card-actions">
         <button className="action-btn primary">Visualizar</button>
         <button className="action-btn secondary">Editar</button>
-        <button className="action-btn tertiary">Histórico</button>
+        <button
+          onClick={navigateToRegisterEvent}
+          className="action-btn tertiary"
+        >
+          Cadastrar Evento
+        </button>
       </div>
     </div>
   );
