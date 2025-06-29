@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./RegisterEquipment.css";
 import { SideBar } from "../../components/SideBar/SideBar";
 import FormInput from "../../components/FormInput/FormInput";
@@ -13,11 +13,39 @@ function RegisterEquipment() {
     dateOfUse: "",
     nextCalibrationDate: "",
     nextMaintenanceDate: "",
+    blockId: "", // Adicionado blockId ao formData
     laboratoryId: 0,
     template: {
       id: 0,
     },
   });
+
+  const [blocks, setBlocks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const getBlocks = async () => {
+    try {
+      const response = await api.get("/block");
+      setBlocks(response.data);
+      setLoading(false);
+      console.log("Blocos carregados:", response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao carregar blocos: " + error.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getBlocks();
+  }, []);
+
+  // Função para obter laboratórios do bloco selecionado
+  const getLaboratoriesByBlock = (blockId) => {
+    if (!blockId) return [];
+    const selectedBlock = blocks.find((block) => block.id == blockId);
+    return selectedBlock ? selectedBlock.laboratories : [];
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,6 +63,8 @@ function RegisterEquipment() {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
+        // Se mudou o bloco, limpa o laboratório selecionado
+        ...(name === "blockId" && { laboratoryId: 0 }),
       }));
     }
   };
@@ -125,13 +155,60 @@ function RegisterEquipment() {
                 value={formData.nextMaintenanceDate}
                 onChange={handleChange}
               />
-              <FormInput
-                label="Laboratório (ID)"
-                name="laboratoryId"
-                type="number"
-                value={formData.laboratoryId}
-                onChange={handleChange}
-              />
+
+              {/* Select de Bloco */}
+              <div className="form-group">
+                <label htmlFor="blockId" className="form-label">
+                  Bloco *
+                </label>
+                <select
+                  id="blockId"
+                  name="blockId"
+                  value={formData.blockId}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                  disabled={loading}
+                >
+                  <option value="">
+                    {loading ? "Carregando blocos..." : "Selecione um bloco"}
+                  </option>
+                  {blocks.map((block) => (
+                    <option key={block.id} value={block.id}>
+                      {block.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Select de Laboratório */}
+              <div className="form-group">
+                <label htmlFor="laboratoryId" className="form-label">
+                  Laboratório *
+                </label>
+                <select
+                  id="laboratoryId"
+                  name="laboratoryId"
+                  value={formData.laboratoryId}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                  disabled={loading || !formData.blockId}
+                >
+                  <option value="">
+                    {!formData.blockId
+                      ? "Primeiro selecione um bloco"
+                      : "Selecione um laboratório"}
+                  </option>
+                  {getLaboratoriesByBlock(formData.blockId).map(
+                    (laboratory) => (
+                      <option key={laboratory.id} value={laboratory.id}>
+                        {laboratory.room}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
             </div>
           </div>
 
