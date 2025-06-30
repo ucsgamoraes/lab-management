@@ -12,7 +12,7 @@ const NotificationBar = () => {
   const location = useLocation();
 
   // Não mostrar na home
-  const isHomePage = location.pathname === '/' || location.pathname === '/home';
+  const isHomePage = location.pathname === '/' || location.pathname === '/home' || location.pathname === '/signin';
 
   // Função para obter informações do usuário do localStorage
   const getUserInfo = () => {
