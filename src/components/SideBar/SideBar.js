@@ -33,7 +33,7 @@ export const SideBar = () => {
     "/register-category",
     "/register-user",
     "/register-model",
-    "/register-block"
+    "/register-block",
   ];
 
   const [isOpen, setIsOpen] = useState(true);
@@ -45,13 +45,13 @@ export const SideBar = () => {
   // Função para buscar informações do usuário no localStorage
   const getUserInfo = () => {
     try {
-      const userData = localStorage.getItem('token');
+      const userData = localStorage.getItem("token");
       if (userData) {
         return JSON.parse(userData);
       }
       return null;
     } catch (error) {
-      console.error('Erro ao buscar dados do usuário:', error);
+      console.error("Erro ao buscar dados do usuário:", error);
       return null;
     }
   };
@@ -81,14 +81,14 @@ export const SideBar = () => {
   const isActive = (path) => location.pathname === path;
 
   // Verificar se o usuário é admin
-  const isAdmin = userInfo?.userType === 'ADMIN';
+  const isAdmin = userInfo?.userType === "ADMIN";
 
   // Função para obter o ícone do tipo de usuário
   const getUserTypeIcon = (userType) => {
     switch (userType) {
-      case 'ADMIN':
+      case "ADMIN":
         return faCrown;
-      case 'RESPONSAVEL':
+      case "RESPONSAVEL":
         return faUserTie;
       default:
         return faUser;
@@ -98,12 +98,12 @@ export const SideBar = () => {
   // Função para obter o texto do tipo de usuário
   const getUserTypeText = (userType) => {
     switch (userType) {
-      case 'ADMIN':
-        return 'Administrador';
-      case 'RESPONSAVEL':
-        return 'Responsável';
+      case "ADMIN":
+        return "Administrador";
+      case "RESPONSAVEL":
+        return "Responsável";
       default:
-        return 'Responsável';
+        return "Responsável";
     }
   };
 
@@ -144,19 +144,20 @@ export const SideBar = () => {
                 <div className="user-type">
                   <FontAwesomeIcon
                     icon={getUserTypeIcon(userInfo.userType)}
-                    style={{ marginRight: "8px", color: isAdmin ? "#gold" : "#007bff" }}
+                    style={{
+                      marginRight: "8px",
+                      color: isAdmin ? "#gold" : "#007bff",
+                    }}
                   />
                   <span>{getUserTypeText(userInfo.userType)}</span>
                 </div>
-                <div className="user-name">
-                  {userInfo.name}
-                </div>
+                <div className="user-name">{userInfo.name}</div>
               </div>
             )
           )}
 
           <button
-            className={`menu-btn ${isActive('/equipments') ? 'active' : ''}`}
+            className={`menu-btn ${isActive("/equipments") ? "active" : ""}`}
             onClick={() => navigateToScreen("/equipments")}
           >
             <FontAwesomeIcon icon={faToolbox} style={{ marginRight: "10px" }} />
@@ -165,16 +166,23 @@ export const SideBar = () => {
 
           <button
             onClick={() => navigateToScreen("/laboratory-report")}
-            className={`menu-btn ${isActive('/laboratory-report') ? 'active' : ''}`}
+            className={`menu-btn ${
+              isActive("/laboratory-report") ? "active" : ""
+            }`}
           >
-            <FontAwesomeIcon icon={faToolbox} style={{ marginRight: "10px" }} />
+            <FontAwesomeIcon
+              icon={faChartLine}
+              style={{ marginRight: "10px" }}
+            />
             Relatório Laboratório
           </button>
 
           {isAdmin && (
             <>
               <button
-                className={`menu-btn ${cadastroRoutes.includes(location.pathname) ? 'active' : ''}`}
+                className={`menu-btn ${
+                  cadastroRoutes.includes(location.pathname) ? "active" : ""
+                }`}
                 onClick={toggleCadastros}
               >
                 <FontAwesomeIcon
@@ -191,7 +199,9 @@ export const SideBar = () => {
               {cadastrosOpen && (
                 <div className="submenu">
                   <button
-                    className={`submenu-btn ${isActive('/register-equipment') ? 'active' : ''}`}
+                    className={`submenu-btn ${
+                      isActive("/register-equipment") ? "active" : ""
+                    }`}
                     onClick={() => navigateToScreen("/register-equipment")}
                   >
                     <FontAwesomeIcon
@@ -201,7 +211,9 @@ export const SideBar = () => {
                     Cadastrar Equipamento
                   </button>
                   <button
-                    className={`submenu-btn ${isActive('/register-event') ? 'active' : ''}`}
+                    className={`submenu-btn ${
+                      isActive("/register-event") ? "active" : ""
+                    }`}
                     onClick={() => navigateToScreen("/register-event")}
                   >
                     <FontAwesomeIcon
@@ -211,22 +223,34 @@ export const SideBar = () => {
                     Cadastrar Eventos
                   </button>
                   <button
-                    className={`submenu-btn ${isActive('/register-category') ? 'active' : ''}`}
+                    className={`submenu-btn ${
+                      isActive("/register-category") ? "active" : ""
+                    }`}
                     onClick={() => navigateToScreen("/register-category")}
                   >
-                    <FontAwesomeIcon icon={faTags} style={{ marginRight: "8px" }} />
+                    <FontAwesomeIcon
+                      icon={faTags}
+                      style={{ marginRight: "8px" }}
+                    />
                     Cadastrar Categoria
                   </button>
                   <button
-                    className={`submenu-btn ${isActive('/register-user') ? 'active' : ''}`}
+                    className={`submenu-btn ${
+                      isActive("/register-user") ? "active" : ""
+                    }`}
                     onClick={() => navigateToScreen("/register-user")}
                   >
-                    <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} />
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      style={{ marginRight: "8px" }}
+                    />
                     Cadastrar Usuário
                   </button>
 
                   <button
-                    className={`submenu-btn ${isActive('/register-model') ? 'active' : ''}`}
+                    className={`submenu-btn ${
+                      isActive("/register-model") ? "active" : ""
+                    }`}
                     onClick={() => navigateToScreen("/register-model")}
                   >
                     <FontAwesomeIcon
@@ -237,7 +261,9 @@ export const SideBar = () => {
                   </button>
 
                   <button
-                    className={`submenu-btn ${isActive('/register-block') ? 'active' : ''}`}
+                    className={`submenu-btn ${
+                      isActive("/register-block") ? "active" : ""
+                    }`}
                     onClick={() => navigateToScreen("/register-block")}
                   >
                     <FontAwesomeIcon

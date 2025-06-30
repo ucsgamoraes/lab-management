@@ -21,9 +21,41 @@ export function EquipmentsList() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [statusSelect, setStatusSelect] = useState("");
   const [sortField, setSortField] = useState("identification");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [laboratoryId, setLaboratoryId] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [blocks, setBlocks] = useState([]);
+  const [blockId, setBlockId] = useState("");
+  const [laboratories, setLaboratories] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
+  const [loadingBlocks, setLoadingBlocks] = useState(false);
+  const [loadingLaboratories, setLoadingLaboratories] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+
+  const getUserInfo = () => {
+    try {
+      const userData = localStorage.getItem("token"); // ou a chave que você usa
+      if (userData) {
+        return JSON.parse(userData);
+      }
+    } catch (error) {
+      console.error("Erro ao obter dados do usuário:", error);
+    }
+    return null;
+  };
+
+  const isAdmin = (user = userInfo) => {
+    return user?.userType === "ADMIN";
+  };
+
+  // Verificar se o usuário é RESPONSIBLE
+  const isResponsible = (user = userInfo) => {
+    return user?.userType === "RESPONSIBLE";
+  };
 
   // Estados para o modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,24 +63,192 @@ export function EquipmentsList() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchEquipments = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const getLaboratoriesByBlock = (blockId) => {
+    if (!blockId) return [];
+    const selectedBlock = blocks.find((block) => block.id == blockId);
+    return selectedBlock ? selectedBlock.laboratories : [];
+  };
 
-        const response = await api.get("/equipment");
-        setEquipments(response.data);
+  // Função para encontrar e selecionar automaticamente o bloco do laboratório do usuário RESPONSIBLE
+  const findAndSelectUserBlock = async () => {
+    if (!isResponsible() || !userInfo.laboratoryId || blocks.length === 0) {
+      return;
+    }
+
+    // Procurar em qual bloco está o laboratório do usuário
+    for (const block of blocks) {
+      if (
+        block.laboratories &&
+        block.laboratories.some((lab) => lab.id === userInfo.laboratoryId)
+      ) {
+        setBlockId(block.id);
+        setLaboratoryId(userInfo.laboratoryId);
+        await fetchLaboratories(block.id);
+        break;
+      }
+    }
+  };
+
+  const fetchLaboratories = async (selectedBlockId) => {
+    if (!selectedBlockId) {
+      setLaboratories([]);
+      return;
+    }
+
+    setLoadingLaboratories(true);
+    try {
+      // Buscar o bloco específico para pegar os laboratórios
+      const selectedBlock = blocks.find((block) => block.id == selectedBlockId);
+      if (selectedBlock && selectedBlock.laboratories) {
+        setLaboratories(selectedBlock.laboratories);
+
+        // Se o usuário é RESPONSIBLE, definir automaticamente seu laboratório
+        if (isResponsible() && userInfo.laboratoryId) {
+          const userLab = selectedBlock.laboratories.find(
+            (lab) => lab.id === userInfo.laboratoryId
+          );
+          if (userLab) {
+            setLaboratoryId(userInfo.laboratoryId);
+          }
+        }
+      } else {
+        setLaboratories([]);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar laboratórios:", error);
+      setLaboratories([]);
+    } finally {
+      setLoadingLaboratories(false);
+    }
+  };
+
+  const handleBlockChange = (e) => {
+    const selectedBlockId = e.target.value;
+
+    // Se o usuário é RESPONSIBLE, não permite alterar o bloco
+    if (isResponsible()) {
+      return;
+    }
+
+    setBlockId(selectedBlockId);
+    setLaboratoryId(""); // Reset laboratory when block changes
+
+    if (selectedBlockId) {
+      fetchLaboratories(selectedBlockId);
+    } else {
+      setLaboratories([]);
+    }
+  };
+
+  const handleLaboratoryChange = (e) => {
+    // Se o usuário é RESPONSIBLE, não permite alterar o laboratório
+    if (isResponsible()) {
+      return;
+    }
+
+    setLaboratoryId(e.target.value);
+  };
+
+  const fetchEquipments = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = {};
+      if (laboratoryId) params.laboratoryId = laboratoryId;
+      if (categoryId) params.categoryId = categoryId;
+      if (statusSelect) params.status = statusSelect;
+
+      const response = await api.get("/equipment/filter", { params });
+      setEquipments(response.data);
+    } catch (err) {
+      console.error("Erro ao buscar equipamentos:", err);
+      setError("Erro ao buscar equipamentos.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchBlocks = async () => {
+    setLoadingBlocks(true);
+    try {
+      const response = await api.get("/block");
+      setBlocks(response.data);
+    } catch (error) {
+      console.error("Erro na requisição de blocos:", error);
+      setError("Erro ao carregar blocos. Tente novamente.");
+    } finally {
+      setLoadingBlocks(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    setLoadingCategories(true);
+    try {
+      const response = await api.get("/category");
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Erro na requisição de categorias:", error);
+      setError("Erro ao carregar categorias. Tente novamente.");
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!blockId) {
+      setLaboratories([]);
+      setLaboratoryId("");
+    } else if (isAdmin()) {
+      // Só busca laboratórios automaticamente para ADMIN quando o bloco muda
+      const labs = getLaboratoriesByBlock(blockId);
+      setLaboratories(labs);
+    }
+  }, [blockId, blocks]);
+
+  useEffect(() => {
+    const user = getUserInfo();
+    setUserInfo(user);
+
+    const initialFetch = async () => {
+      try {
+        setError(null);
+        // Usar o user obtido diretamente, não o state userInfo
+        if (isAdmin(user)) {
+          const response = await api.get("/equipment");
+          setEquipments(response.data);
+        } else {
+          const params = {};
+          params.laboratoryId = user?.laboratoryId;
+          const response = await api.get("/equipment/filter", { params });
+          setEquipments(response.data);
+        }
       } catch (err) {
-        console.error("Erro ao carregar equipamentos:", err);
-        setError("Erro ao carregar equipamentos. Tente novamente.");
+        console.error("Erro ao buscar equipamentos:", err);
+        setError("Erro ao buscar equipamentos.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEquipments();
+    const fetchFilters = async () => {
+      try {
+        await Promise.all([fetchBlocks(), fetchCategories()]);
+      } catch (err) {
+        console.error("Erro ao carregar filtros:", err);
+      }
+    };
+
+    fetchFilters();
+    initialFetch();
   }, []);
+
+  // Efeito para configurar automaticamente o laboratório do usuário RESPONSIBLE
+  useEffect(() => {
+    if (userInfo && blocks.length > 0) {
+      findAndSelectUserBlock();
+    }
+  }, [userInfo, blocks]);
 
   // Detecta mudanças na sidebar
   useEffect(() => {
@@ -230,7 +430,11 @@ export function EquipmentsList() {
               <p>{error}</p>
               <button
                 className="retry-btn"
-                onClick={() => window.location.reload()}
+                onClick={() => {
+                  setError(null);
+                  fetchBlocks();
+                  fetchCategories();
+                }}
               >
                 Tentar Novamente
               </button>
@@ -256,33 +460,121 @@ export function EquipmentsList() {
             <div className="total-count" style={{ marginBottom: 10 }}>
               Total: {filteredEquipments.length} equipamento(s)
             </div>
-            <button className="total-count" onClick={() => navigate("/register-equipment")}>Adicionar equipamento</button>
+            <button
+              className="total-count"
+              onClick={() => navigate("/register-equipment")}
+            >
+              Adicionar equipamento
+            </button>
           </div>
         </div>
 
-        <div className="filters-section">
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="Buscar por identificação, patrimônio, tag, descrição..."
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <div className="filters-container">
+          <div className="filter-group">
+            <label htmlFor="block">Bloco</label>
+            <select
+              id="block"
+              value={blockId}
+              onChange={handleBlockChange}
+              disabled={loadingBlocks || isResponsible()}
+            >
+              <option value="">
+                {loadingBlocks ? "Carregando blocos..." : "Selecione um bloco"}
+              </option>
+              {blocks.map((block) => (
+                <option key={block.id} value={block.id}>
+                  {block.description}
+                </option>
+              ))}
+            </select>
+            {isResponsible() && (
+              <small className="field-info">
+                Bloco selecionado automaticamente
+              </small>
+            )}
           </div>
 
-          <select
-            className="status-filter"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="ALL">Todos os Status</option>
-            <option value="AVAILABLE">Disponível</option>
-            <option value="IN_USE">Em Uso</option>
-            <option value="MAINTENANCE">Manutenção</option>
-            <option value="OUT_OF_ORDER">Fora de Operação</option>
-            <option value="UNAVAILABLE">Indisponível</option>
-          </select>
+          <div className="filter-group">
+            <label htmlFor="laboratoryId">Laboratório</label>
+            <select
+              id="laboratoryId"
+              value={laboratoryId}
+              onChange={handleLaboratoryChange}
+              disabled={loadingLaboratories || !blockId || isResponsible()}
+            >
+              <option value="">
+                {loadingLaboratories
+                  ? "Carregando laboratórios..."
+                  : isAdmin()
+                  ? "Todos"
+                  : "Selecione um laboratório"}
+              </option>
+              {laboratories.map((lab) => (
+                <option key={lab.id} value={lab.id}>
+                  {`${lab.roomNumber} - ${lab.roomName}` ||
+                    lab.roomName ||
+                    `Laboratório ${lab.id}`}
+                </option>
+              ))}
+            </select>
+            {isResponsible() && (
+              <small className="field-info">
+                Laboratório fixo conforme seu perfil
+              </small>
+            )}
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="categoryId">Categoria</label>
+            <select
+              id="categoryId"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              disabled={loadingCategories}
+            >
+              <option value="">
+                {loadingCategories ? "Carregando categorias..." : "Todas"}
+              </option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            {isResponsible() && (
+              <small className="field-info">
+                Você pode selecionar livremente
+              </small>
+            )}
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="statusSelect">Status</label>
+            <select
+              id="statusSelect"
+              value={statusSelect}
+              onChange={(e) => setStatusSelect(e.target.value)}
+            >
+              <option value="">
+                Todos
+              </option>
+              <option  value={"AVAILABLE"}>
+                Disponível
+              </option>
+              <option value={"UNAVAILABLE"}>
+                Indisponível
+              </option>
+            </select>
+            {isResponsible() && (
+              <small className="field-info">
+                Você pode selecionar livremente
+              </small>
+            )}
+          </div>
+
+          <button className="filter-button" onClick={fetchEquipments} disabled={!laboratoryId}>
+            Buscar
+          </button>
         </div>
 
         <div className="table-container">
@@ -505,7 +797,9 @@ export function EquipmentsList() {
                   <td>
                     <div className="actions-cell">
                       <button
-                      onClick={() => navigate(`/equipment-details/${equipment.id}`)}
+                        onClick={() =>
+                          navigate(`/equipment-details/${equipment.id}`)
+                        }
                         className="action-btn view-btn"
                         title="Visualizar"
                       >
