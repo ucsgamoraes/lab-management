@@ -6,6 +6,11 @@ import api from "../../services/api";
 
 function RegisterEquipment() {
   const [templates, setTemplates] = useState([]);
+  const [blocks, setBlocks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingBlocks, setLoadingBlocks] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
     identification: "",
@@ -17,24 +22,45 @@ function RegisterEquipment() {
     status: "",
     nextCalibrationDate: "",
     nextMaintenanceDate: "",
-    blockId: "", // Adicionado blockId ao formData
+    blockId: "",
     laboratoryId: 0,
     templateId: "",
   });
 
-  const [blocks, setBlocks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Função para obter informações do usuário do localStorage
+  const getUserInfo = () => {
+    try {
+      const userData = localStorage.getItem('token'); // ou a chave que você usa
+      if (userData) {
+        return JSON.parse(userData);
+      }
+    } catch (error) {
+      console.error('Erro ao obter dados do usuário:', error);
+    }
+    return null;
+  };
+
+  // Verificar se o usuário é ADMIN
+  const isAdmin = () => {
+    return userInfo?.userType === 'ADMIN';
+  };
+
+  // Verificar se o usuário é RESPONSIBLE
+  const isResponsible = () => {
+    return userInfo?.userType === 'RESPONSIBLE';
+  };
 
   const getBlocks = async () => {
+    setLoadingBlocks(true);
     try {
       const response = await api.get("/block");
       setBlocks(response.data);
-      setLoading(false);
       console.log("Blocos carregados:", response.data);
     } catch (error) {
-      console.error(error);
-      alert("Erro ao carregar blocos: " + error.message);
-      setLoading(false);
+      console.error('Erro na requisição de blocos:', error);
+      setError('Erro ao carregar blocos. Tente novamente.');
+    } finally {
+      setLoadingBlocks(false);
     }
   };
 
@@ -51,10 +77,40 @@ function RegisterEquipment() {
     }
   };
 
+  // Função para encontrar e selecionar automaticamente o bloco do laboratório do usuário RESPONSIBLE
+  const findAndSelectUserBlock = async () => {
+    if (!isResponsible() || !userInfo.laboratoryId || blocks.length === 0) {
+      return;
+    }
+
+    // Procurar em qual bloco está o laboratório do usuário
+    for (const block of blocks) {
+      if (block.laboratories && block.laboratories.some(lab => lab.id === userInfo.laboratoryId)) {
+        setFormData(prev => ({
+          ...prev,
+          blockId: block.id,
+          laboratoryId: userInfo.laboratoryId
+        }));
+        break;
+      }
+    }
+  };
+
   useEffect(() => {
+    // Obter informações do usuário ao carregar o componente
+    const user = getUserInfo();
+    setUserInfo(user);
+
     getBlocks();
     getTemplates();
   }, []);
+
+  // Efeito para configurar automaticamente o laboratório do usuário RESPONSIBLE
+  useEffect(() => {
+    if (userInfo && blocks.length > 0) {
+      findAndSelectUserBlock();
+    }
+  }, [userInfo, blocks]);
 
   // Função para obter laboratórios do bloco selecionado
   const getLaboratoriesByBlock = (blockId) => {
@@ -62,8 +118,14 @@ function RegisterEquipment() {
     const selectedBlock = blocks.find((block) => block.id == blockId);
     return selectedBlock ? selectedBlock.laboratories : [];
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Se o usuário é RESPONSIBLE, não permite alterar o bloco nem o laboratório
+    if ((name === 'blockId' || name === 'laboratoryId') && isResponsible()) {
+      return;
+    }
 
     if (name === "templateId") {
       const selectedTemplate = templates.find(
@@ -79,7 +141,7 @@ function RegisterEquipment() {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
-        ...(name === "blockId" && { laboratoryId: 0 }),
+        ...(name === "blockId" && { laboratoryId: isResponsible() ? userInfo.laboratoryId : 0 }),
       }));
     }
   };
@@ -101,17 +163,71 @@ function RegisterEquipment() {
       });
       alert("Equipamento cadastrado com sucesso!");
       console.log(response.data);
+
+      // Limpar o formulário após o cadastro bem-sucedido, mas manter bloco e laboratório para RESPONSIBLE
+      setFormData(prev => ({
+        identification: "",
+        propertyNumber: "",
+        serialNumber: "",
+        equipmentTag: "",
+        dateOfUse: "",
+        description: "",
+        status: "",
+        nextCalibrationDate: "",
+        nextMaintenanceDate: "",
+        blockId: isResponsible() ? prev.blockId : "",
+        laboratoryId: isResponsible() ? prev.laboratoryId : 0,
+        templateId: "",
+      }));
     } catch (error) {
       console.log(error);
       alert("Erro ao cadastrar equipamento: " + error.message);
     }
   };
 
+  // Tratamento de erro similar ao LaboratoryReport
+  if (error && blocks.length === 0) {
+    return (
+      <div className="register-equipment-container">
+        <SideBar />
+        <div className="main-content">
+          <div className="error-container">
+            <div className="error-message">
+              <h2>Erro ao carregar dados</h2>
+              <p>{error}</p>
+              <button
+                className="retry-btn"
+                onClick={() => {
+                  setError(null);
+                  getBlocks();
+                  getTemplates();
+                }}
+              >
+                Tentar Novamente
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="register-equipment-container">
       <SideBar />
       <div className="main-content">
         <h1 className="form-title">Cadastro de Equipamento</h1>
+
+        {/* Mensagem informativa para usuários RESPONSIBLE */}
+        {isResponsible() && (
+          <div className="info-message">
+            <p>
+              <strong>Informação:</strong> Você está cadastrando equipamentos para seu laboratório designado.
+              O bloco e laboratório não podem ser alterados.
+            </p>
+          </div>
+        )}
+
         <form className="equipment-form" onSubmit={handleSubmit}>
           <div className="form-columns">
             <div className="form-column">
@@ -217,10 +333,10 @@ function RegisterEquipment() {
                   onChange={handleChange}
                   className="form-input"
                   required
-                  disabled={loading}
+                  disabled={loadingBlocks || isResponsible()}
                 >
                   <option value="">
-                    {loading ? "Carregando blocos..." : "Selecione um bloco"}
+                    {loadingBlocks ? "Carregando blocos..." : "Selecione um bloco"}
                   </option>
                   {blocks.map((block) => (
                     <option key={block.id} value={block.id}>
@@ -242,7 +358,7 @@ function RegisterEquipment() {
                   onChange={handleChange}
                   className="form-input"
                   required
-                  disabled={loading || !formData.blockId}
+                  disabled={loading || !formData.blockId || isResponsible()}
                 >
                   <option value="">
                     {!formData.blockId
@@ -252,7 +368,7 @@ function RegisterEquipment() {
                   {getLaboratoriesByBlock(formData.blockId).map(
                     (laboratory) => (
                       <option key={laboratory.id} value={laboratory.id}>
-                        {laboratory.roomName}
+                        {`${laboratory.roomNumber} - ${laboratory.roomName}`}
                       </option>
                     )
                   )}
