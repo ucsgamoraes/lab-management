@@ -253,3 +253,15 @@
   border-radius: 8px;
 }
 
+.equipment-item.no-calibration {
+  border-left: 4px solid #ffa500;
+}
+
+.item-badge.badge-no-calibration {
+  background-color: #ffa500;
+  color: white;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+}

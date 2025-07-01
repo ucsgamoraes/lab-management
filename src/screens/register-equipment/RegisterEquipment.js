@@ -96,8 +96,6 @@ function RegisterEquipment() {
         equipmentTag: formData.equipmentTag,
         dateOfUse: formData.dateOfUse,
         status: formData.status,
-        nextCalibrationDate: formData.nextCalibrationDate,
-        nextMaintenanceDate: formData.nextMaintenanceDate,
         laboratoryId: parseInt(formData.laboratoryId),
         templateId: parseInt(formData.templateId),
       });
@@ -206,20 +204,6 @@ function RegisterEquipment() {
                   <option value={"UNAVAILABLE"}>Indisponível</option>
                 </select>
               </div>
-              <FormInput
-                label="Próxima Calibração"
-                name="nextCalibrationDate"
-                type="date"
-                value={formData.nextCalibrationDate}
-                onChange={handleChange}
-              />
-              <FormInput
-                label="Próxima Manutenção"
-                name="nextMaintenanceDate"
-                type="date"
-                value={formData.nextMaintenanceDate}
-                onChange={handleChange}
-              />
 
               {/* Select de Bloco */}
               <div className="form-group">

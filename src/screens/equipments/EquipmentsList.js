@@ -487,11 +487,6 @@ export function EquipmentsList() {
                 </option>
               ))}
             </select>
-            {isResponsible() && (
-              <small className="field-info">
-                Bloco selecionado automaticamente
-              </small>
-            )}
           </div>
 
           <div className="filter-group">
@@ -517,11 +512,6 @@ export function EquipmentsList() {
                 </option>
               ))}
             </select>
-            {isResponsible() && (
-              <small className="field-info">
-                Laboratório fixo conforme seu perfil
-              </small>
-            )}
           </div>
 
           <div className="filter-group">
@@ -541,11 +531,6 @@ export function EquipmentsList() {
                 </option>
               ))}
             </select>
-            {isResponsible() && (
-              <small className="field-info">
-                Você pode selecionar livremente
-              </small>
-            )}
           </div>
 
           <div className="filter-group">
@@ -565,11 +550,6 @@ export function EquipmentsList() {
                 Indisponível
               </option>
             </select>
-            {isResponsible() && (
-              <small className="field-info">
-                Você pode selecionar livremente
-              </small>
-            )}
           </div>
 
           <button className="filter-button" onClick={fetchEquipments} disabled={!laboratoryId}>

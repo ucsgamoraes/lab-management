@@ -284,9 +284,6 @@ function LaboratoryReport() {
                   </option>
                 ))}
               </select>
-              {isResponsible() && (
-                <small className="field-info">Bloco selecionado automaticamente</small>
-              )}
             </div>
 
             <div className="filter-group">
@@ -307,9 +304,6 @@ function LaboratoryReport() {
                   </option>
                 ))}
               </select>
-              {isResponsible() && (
-                <small className="field-info">Laboratório fixo conforme seu perfil</small>
-              )}
             </div>
 
             <div className="filter-group">

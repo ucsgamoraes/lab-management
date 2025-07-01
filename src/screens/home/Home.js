@@ -79,18 +79,22 @@ function Home() {
           {equipments.map((equipment, index) => {
             const isExpired = equipment.daysExpiration === -1;
             const isWarning = equipment.daysExpiration > -1 && equipment.daysExpiration <= 30;
+            const hasNoCalibration = !equipment.nextCalibrationDate;
 
             return (
               <div
                 key={equipment.id}
-                className={`equipment-item ${isExpired ? 'expired' : ''}`}
+                className={`equipment-item ${isExpired ? 'expired' : ''} ${hasNoCalibration ? 'no-calibration' : ''}`}
               >
                 <div className="item-header">
                   <span>{index + 1}. {equipment.identification || 'Sem Identificação'}</span>
-                  {isExpired && (
+                  {hasNoCalibration && (
+                    <span className="item-badge badge-no-calibration">📅 Cadastrar Calibração</span>
+                  )}
+                  {!hasNoCalibration && isExpired && (
                     <span className="item-badge badge-expired">⚠️ Expirado</span>
                   )}
-                  {isWarning && !isExpired && (
+                  {!hasNoCalibration && isWarning && !isExpired && (
                     <span className="item-badge badge-warning">⏳ Expira em {equipment.daysExpiration} dias</span>
                   )}
                 </div>
@@ -100,9 +104,10 @@ function Home() {
                   <span>Status: {equipment.equipmentStatusType || 'N/A'}</span>
                   <span>Série: {equipment.serialNumber || 'N/A'}</span>
                   <span>
-                    Calibração: {equipment.nextCalibrationDate ?
-                      new Date(equipment.nextCalibrationDate).toLocaleDateString('pt-BR') :
-                      'N/A'}
+                    Calibração: {hasNoCalibration ?
+                      'Necessário cadastrar calibração' :
+                      new Date(equipment.nextCalibrationDate).toLocaleDateString('pt-BR')
+                    }
                   </span>
                   {equipment.template?.brand && <span>Marca: {equipment.template.brand}</span>}
                   {equipment.laboratory && (

@@ -215,6 +215,94 @@ function RegisterModel() {
     }
   };
 
+  // Estilos para os modais - organizados para reutilização
+  const modalStyles = {
+    overlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000
+    },
+    container: {
+      backgroundColor: 'white',
+      padding: '30px',
+      borderRadius: '8px',
+      maxWidth: '90%',
+      maxHeight: '90%',
+      overflowY: 'auto',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+    },
+    formContainer: {
+      width: '850px' // Aumentei um pouco para acomodar melhor os campos
+    },
+    detailContainer: {
+      width: '700px'
+    },
+    formGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gap: '50px', // Aumentei o gap
+      marginBottom: '25px',
+      alignItems: 'start'
+    },
+    fieldContainer: {
+      marginBottom: '20px'
+    },
+    label: {
+      display: 'block',
+      marginBottom: '8px',
+      fontWeight: '500',
+      color: '#495057'
+    },
+    select: {
+      width: '100%',
+      padding: '10px', // Aumentei o padding
+      border: '1px solid #ced4da',
+      borderRadius: '4px',
+      minHeight: '42px',
+      fontSize: '14px',
+      backgroundColor: 'white'
+    },
+    textarea: {
+      width: '100%',
+      padding: '10px',
+      border: '1px solid #ced4da',
+      borderRadius: '4px',
+      resize: 'vertical',
+      fontSize: '14px',
+      fontFamily: 'inherit'
+    },
+    buttonGroup: {
+      marginTop: '30px',
+      display: 'flex',
+      gap: '15px',
+      justifyContent: 'center'
+    },
+    button: {
+      padding: '12px 30px',
+      border: 'none',
+      borderRadius: '4px',
+      fontWeight: '500',
+      cursor: 'pointer',
+      fontSize: '14px',
+      transition: 'background-color 0.2s'
+    },
+    primaryButton: {
+      backgroundColor: '#007bff',
+      color: 'white'
+    },
+    secondaryButton: {
+      backgroundColor: '#6c757d',
+      color: 'white'
+    }
+  };
+
   return (
     <div className="register-equipment-container">
       <SideBar />
@@ -332,58 +420,48 @@ function RegisterModel() {
 
         {/* Modal para Cadastro de Template */}
         {showModal && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000
-          }}>
-            <div style={{
-              backgroundColor: 'white',
-              padding: '30px',
-              borderRadius: '8px',
-              width: '800px',
-              maxWidth: '90%',
-              maxHeight: '90%',
-              overflowY: 'auto'
-            }}>
-              <h3>Cadastrar Novo Modelo</h3>
+          <div style={modalStyles.overlay}>
+            <div style={{...modalStyles.container, ...modalStyles.formContainer}}>
+              <h3 style={{ marginBottom: '25px', color: '#495057' }}>Cadastrar Novo Modelo</h3>
+
               <form onSubmit={handleSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '20px' }}>
+                <div style={modalStyles.formGrid}>
                   <div>
-                    <FormInput
-                      label="Marca"
-                      name="brand"
-                      type="text"
-                      value={formData.brand}
-                      onChange={handleChange}
-                      required
-                    />
-                    <FormInput
-                      label="Capacidade de Medição"
-                      name="capacityMeasurement"
-                      type="text"
-                      value={formData.capacityMeasurement}
-                      onChange={handleChange}
-                    />
-                    <FormInput
-                      label="Critério de Verificação"
-                      name="verificationCriterion"
-                      type="text"
-                      value={formData.verificationCriterion}
-                      onChange={handleChange}
-                    />
+                    <div style={modalStyles.fieldContainer}>
+                      <FormInput
+                        label="Marca"
+                        name="brand"
+                        type="text"
+                        value={formData.brand}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div style={modalStyles.fieldContainer}>
+                      <FormInput
+                        label="Capacidade de Medição"
+                        name="capacityMeasurement"
+                        type="text"
+                        value={formData.capacityMeasurement}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div style={modalStyles.fieldContainer}>
+                      <FormInput
+                        label="Critério de Verificação"
+                        name="verificationCriterion"
+                        type="text"
+                        value={formData.verificationCriterion}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <div style={{ marginBottom: '15px' }}>
-                      <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500' }}>
+                    <div style={modalStyles.fieldContainer}>
+                      <label style={modalStyles.label}>
                         Tipo de Calibração Periódica
                       </label>
                       <select
@@ -391,7 +469,7 @@ function RegisterModel() {
                         value={formData.periodCalibrationType}
                         onChange={handleChange}
                         required
-                        style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px' }}
+                        style={modalStyles.select}
                       >
                         <option value="NONE">Não Requer Calibração</option>
                         <option value="THREE_MONTHS">3 Meses</option>
@@ -405,8 +483,8 @@ function RegisterModel() {
                       </select>
                     </div>
 
-                    <div style={{ marginBottom: '15px' }}>
-                      <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500' }}>
+                    <div style={modalStyles.fieldContainer}>
+                      <label style={modalStyles.label}>
                         Tipo de Manutenção Periódica
                       </label>
                       <select
@@ -414,7 +492,7 @@ function RegisterModel() {
                         value={formData.periodMaintenanceType}
                         onChange={handleChange}
                         required
-                        style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px' }}
+                        style={modalStyles.select}
                       >
                         <option value="NONE">Não Requer Manutenção</option>
                         <option value="ONE_MONTH">1 Mês</option>
@@ -427,8 +505,8 @@ function RegisterModel() {
                       </select>
                     </div>
 
-                    <div style={{ marginBottom: '15px' }}>
-                      <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500' }}>
+                    <div style={modalStyles.fieldContainer}>
+                      <label style={modalStyles.label}>
                         Categoria
                       </label>
                       <select
@@ -436,7 +514,7 @@ function RegisterModel() {
                         value={formData.categoryId}
                         onChange={handleChange}
                         required
-                        style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px' }}
+                        style={modalStyles.select}
                       >
                         <option value={0}>Selecione uma categoria</option>
                         {categories.map(category => (
@@ -447,19 +525,21 @@ function RegisterModel() {
                       </select>
                     </div>
 
-                    <FormInput
-                      label="Critério de Calibração"
-                      name="calibrationCriterion"
-                      type="text"
-                      value={formData.calibrationCriterion}
-                      onChange={handleChange}
-                    />
+                    <div style={modalStyles.fieldContainer}>
+                      <FormInput
+                        label="Critério de Calibração"
+                        name="calibrationCriterion"
+                        type="text"
+                        value={formData.calibrationCriterion}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
                 </div>
 
                 {/* Campo Descrição em linha separada e maior */}
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500' }}>
+                <div style={modalStyles.fieldContainer}>
+                  <label style={modalStyles.label}>
                     Descrição
                   </label>
                   <textarea
@@ -468,29 +548,22 @@ function RegisterModel() {
                     onChange={handleChange}
                     required
                     rows="4"
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      border: '1px solid #ced4da',
-                      borderRadius: '4px',
-                      resize: 'vertical',
-                      fontSize: '14px'
-                    }}
+                    style={modalStyles.textarea}
                     placeholder="Digite a descrição do template..."
                   />
                 </div>
 
-                <div style={{ marginTop: '30px', display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                <div style={modalStyles.buttonGroup}>
                   <button
                     type="submit"
-                    style={{ padding: '12px 30px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '500' }}
+                    style={{...modalStyles.button, ...modalStyles.primaryButton}}
                   >
                     Cadastrar Modelo
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    style={{ padding: '12px 30px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '500' }}
+                    style={{...modalStyles.button, ...modalStyles.secondaryButton}}
                   >
                     Cancelar
                   </button>
@@ -502,29 +575,10 @@ function RegisterModel() {
 
         {/* Modal para Detalhes do Template */}
         {showDetailModal && selectedTemplate && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000
-          }}>
-            <div style={{
-              backgroundColor: 'white',
-              padding: '30px',
-              borderRadius: '8px',
-              width: '700px',
-              maxWidth: '90%',
-              maxHeight: '90%',
-              overflowY: 'auto'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3>Detalhes do Modelo</h3>
+          <div style={modalStyles.overlay}>
+            <div style={{...modalStyles.container, ...modalStyles.detailContainer}}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                <h3 style={{ color: '#495057', margin: 0 }}>Detalhes do Modelo</h3>
                 <button
                   onClick={() => setShowDetailModal(false)}
                   style={{
@@ -538,95 +592,99 @@ function RegisterModel() {
                     height: '30px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    borderRadius: '50%',
+                    transition: 'background-color 0.2s'
                   }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
                 >
                   ×
                 </button>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '25px' }}>
                 <div>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '5px' }}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '8px' }}>
                       Descrição:
                     </label>
-                    <p style={{ margin: '0', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                    <p style={{ margin: '0', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6', fontSize: '14px' }}>
                       {selectedTemplate.description}
                     </p>
                   </div>
 
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '5px' }}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '8px' }}>
                       Marca:
                     </label>
-                    <p style={{ margin: '0', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                    <p style={{ margin: '0', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6', fontSize: '14px' }}>
                       {selectedTemplate.brand}
                     </p>
                   </div>
 
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '5px' }}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '8px' }}>
                       Tipo de Template:
                     </label>
-                    <p style={{ margin: '0', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                    <p style={{ margin: '0', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6', fontSize: '14px' }}>
                       {selectedTemplate.templateType === 'ANALOG' ? 'Analógico' : 'Digital'}
                     </p>
                   </div>
 
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '5px' }}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '8px' }}>
                       Capacidade de Medição:
                     </label>
-                    <p style={{ margin: '0', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                    <p style={{ margin: '0', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6', fontSize: '14px' }}>
                       {selectedTemplate.capacityMeasurement || 'Não informado'}
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '5px' }}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '8px' }}>
                       Tipo de Calibração Periódica:
                     </label>
-                    <p style={{ margin: '0', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                    <p style={{ margin: '0', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6', fontSize: '14px' }}>
                       {formatPeriodType(selectedTemplate.periodCalibrationType)}
                     </p>
                   </div>
 
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '5px' }}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '8px' }}>
                       Tipo de Manutenção Periódica:
                     </label>
-                    <p style={{ margin: '0', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                    <p style={{ margin: '0', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6', fontSize: '14px' }}>
                       {formatPeriodType(selectedTemplate.periodMaintenanceType)}
                     </p>
                   </div>
 
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '5px' }}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '8px' }}>
                       Critério de Verificação:
                     </label>
-                    <p style={{ margin: '0', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                    <p style={{ margin: '0', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6', fontSize: '14px' }}>
                       {selectedTemplate.verificationCriterion || 'Não informado'}
                     </p>
                   </div>
 
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '5px' }}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '8px' }}>
                       Critério de Calibração:
                     </label>
-                    <p style={{ margin: '0', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                    <p style={{ margin: '0', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6', fontSize: '14px' }}>
                       {selectedTemplate.calibrationCriterion || 'Não informado'}
                     </p>
                   </div>
 
                   {selectedTemplate.id && (
-                    <div style={{ marginBottom: '15px' }}>
-                      <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '5px' }}>
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{ display: 'block', fontWeight: '600', color: '#495057', marginBottom: '8px' }}>
                         Categoria:
                       </label>
-                      <p style={{ margin: '0', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                      <p style={{ margin: '0', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #dee2e6', fontSize: '14px' }}>
                         {selectedTemplate.category?.name || 'Não informado'}
                       </p>
                     </div>
@@ -634,18 +692,10 @@ function RegisterModel() {
                 </div>
               </div>
 
-              <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
+              <div style={modalStyles.buttonGroup}>
                 <button
                   onClick={() => setShowDetailModal(false)}
-                  style={{
-                    padding: '12px 30px',
-                    backgroundColor: '#6c757d',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}
+                  style={{...modalStyles.button, ...modalStyles.secondaryButton}}
                 >
                   Fechar
                 </button>
