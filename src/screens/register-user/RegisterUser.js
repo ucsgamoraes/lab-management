@@ -116,7 +116,7 @@ function RegisterUser() {
                 >
                   <option value="">Selecione o tipo</option>
                   <option value="ADMIN">ADMIN</option>
-                  <option value="USER">USER</option>
+                  <option value="RESPONSIBLE">RESPONSAVEL</option>
                 </select>
               </div>
 

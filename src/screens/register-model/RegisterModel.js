@@ -13,6 +13,7 @@ function RegisterModel() {
     verificationCriterion: "",
     calibrationCriterion: "",
     periodMaintenanceType: "NONE",
+    templateType: "ANALOG",
     categoryId: 0
   });
 
@@ -119,6 +120,7 @@ function RegisterModel() {
         verificationCriterion: "",
         calibrationCriterion: "",
         periodMaintenanceType: "NONE",
+        templateType: "ANALOG",
         categoryId: 0
       });
     } catch (error) {
@@ -457,6 +459,16 @@ function RegisterModel() {
                         onChange={handleChange}
                       />
                     </div>
+
+                    <div style={modalStyles.fieldContainer}>
+                      <FormInput
+                        label="Critério de Calibração"
+                        name="calibrationCriterion"
+                        type="text"
+                        value={formData.calibrationCriterion}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -507,6 +519,22 @@ function RegisterModel() {
 
                     <div style={modalStyles.fieldContainer}>
                       <label style={modalStyles.label}>
+                        Tipo do Modelo
+                      </label>
+                      <select
+                        name="templateType"
+                        value={formData.templateType}
+                        onChange={handleChange}
+                        required
+                        style={modalStyles.select}
+                      >
+                        <option value="ANALOG">Analógico</option>
+                        <option value="DIGITAL">Digital</option>
+                      </select>
+                    </div>
+
+                    <div style={modalStyles.fieldContainer}>
+                      <label style={modalStyles.label}>
                         Categoria
                       </label>
                       <select
@@ -523,16 +551,6 @@ function RegisterModel() {
                           </option>
                         ))}
                       </select>
-                    </div>
-
-                    <div style={modalStyles.fieldContainer}>
-                      <FormInput
-                        label="Critério de Calibração"
-                        name="calibrationCriterion"
-                        type="text"
-                        value={formData.calibrationCriterion}
-                        onChange={handleChange}
-                      />
                     </div>
                   </div>
                 </div>

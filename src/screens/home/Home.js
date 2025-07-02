@@ -25,6 +25,17 @@ function Home() {
     return userInfo?.userType === 'RESPONSIBLE';
   };
 
+  const getStatusText = (status) => {
+      switch (status) {
+        case "AVAILABLE":
+          return "Disponível";
+        case "UNAVAILABLE":
+          return "Indisponível";
+        default:
+          return "Não Definido";
+      }
+    };
+
   useEffect(() => {
     const user = getUserInfo();
     setUserInfo(user);
@@ -101,7 +112,7 @@ function Home() {
 
                 <div className="item-meta">
                   <span>{equipment.description || 'Sem descrição'}</span>
-                  <span>Status: {equipment.equipmentStatusType || 'N/A'}</span>
+                  <span>Status: {getStatusText(equipment.equipmentStatusType)}</span>
                   <span>Série: {equipment.serialNumber || 'N/A'}</span>
                   <span>
                     Calibração: {hasNoCalibration ?
