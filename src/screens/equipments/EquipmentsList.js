@@ -785,9 +785,6 @@ export function EquipmentsList() {
                       >
                         <FontAwesomeIcon icon={faEye} />
                       </button>
-                      <button className="action-btn edit-btn" title="Editar">
-                        <FontAwesomeIcon icon={faPenToSquare} />
-                      </button>
                       <button
                         onClick={() => openEventModal(equipment)}
                         className="action-btn event-btn"

@@ -16,7 +16,6 @@ const EventModal = ({ isOpen, onClose, equipment, eventToEdit }) => {
     requestDate: "",
     finalizedDate: "",
     requestNumber: "",
-    calibrationRequested: false,
     description: "",
     costValue: "",
     certificateNumber: "",
@@ -30,18 +29,28 @@ const EventModal = ({ isOpen, onClose, equipment, eventToEdit }) => {
   useEffect(() => {
     if (isOpen && equipment) {
       if (eventToEdit) {
-        // Editando evento
+        // Função para obter o valor do select baseado no texto do enum
+       const getEventTypeValue = (text) => {
+         const option = EventType.getOptions().find(opt => opt.key === text);
+         return option ? (option.value - 1).toString() : '';
+       };
+
+       const getEventStatusValue = (text) => {
+         const option = EventStatusType.getOptions().find(opt => opt.key === text);
+         return option ? (option.value - 1).toString() : '';
+       };
+
+        // Editando evento - agora converte do texto para o valor do select
         setFormData({
-          eventType: eventToEdit.eventType,
+          eventType: getEventTypeValue(eventToEdit.eventType), // Converte texto para valor do select
           requestDate: eventToEdit.requestDate?.split("T")[0] || "",
           finalizedDate: eventToEdit.finalizedDate?.split("T")[0] || "",
           requestNumber: eventToEdit.requestNumber || "",
-          calibrationRequested: eventToEdit.calibrationRequested || false,
           description: eventToEdit.description || "",
           costValue: eventToEdit.costValue || "",
           certificateNumber: eventToEdit.certificateNumber || "",
-          equipmentId: eventToEdit.equipmentId,
-          status: eventToEdit.status,
+          equipmentId: eventToEdit.equipmentId || equipment.id, // Usa equipment.id se equipmentId não existir
+          status: getEventStatusValue(eventToEdit.status), // Converte texto para valor do select
         });
       } else {
         // Novo evento
@@ -58,7 +67,6 @@ const EventModal = ({ isOpen, onClose, equipment, eventToEdit }) => {
         requestDate: "",
         finalizedDate: "",
         requestNumber: "",
-        calibrationRequested: false,
         description: "",
         costValue: "",
         certificateNumber: "",
@@ -81,24 +89,48 @@ const EventModal = ({ isOpen, onClose, equipment, eventToEdit }) => {
     setLoading(true);
 
     try {
-      const response = await api.post("/event", {
+      // Função para obter o texto do enum baseado no valor selecionado
+      const getEventStatusKey = (value) => {
+        const option = EventStatusType.getOptions().find(opt => opt.value - 1 === parseInt(value));
+        return option ? option.key : '';
+      };
+
+      const getEventTypeKey = (value) => {
+        const option = EventType.getOptions().find(opt => opt.value - 1 === parseInt(value));
+        return option ? option.key : '';
+      };
+
+      const requestData = {
         ...formData,
-        eventType: parseInt(formData.eventType),
-        status: parseInt(formData.status),
+        eventType: getEventTypeKey(formData.eventType),
+        status: getEventStatusKey(formData.status),
         requestNumber: formData.requestNumber
           ? parseInt(formData.requestNumber)
           : null,
         costValue: formData.costValue ? parseFloat(formData.costValue) : 0,
         equipmentId: parseInt(formData.equipmentId),
-      });
+      };
 
-      alert("Evento cadastrado com sucesso!");
+      let response;
+
+      // Correção: verifica se é edição ou criação
+      if (eventToEdit) {
+        // Editando evento existente - usa PUT
+        response = await api.put(`/event/${eventToEdit.id}`, requestData);
+        alert("Evento atualizado com sucesso!");
+      } else {
+        // Criando novo evento - usa POST
+        response = await api.post("/event", requestData);
+        alert("Evento cadastrado com sucesso!");
+      }
+
       console.log(response.data);
       onClose(); // Fecha o modal após sucesso
     } catch (error) {
       console.error(error);
+      const action = eventToEdit ? "atualizar" : "cadastrar";
       alert(
-        "Erro ao cadastrar evento: " +
+        `Erro ao ${action} evento: ` +
           (error.response?.data?.message || error.message)
       );
     } finally {
@@ -120,7 +152,7 @@ const EventModal = ({ isOpen, onClose, equipment, eventToEdit }) => {
         <div className="event-modal-header">
           <div className="modal-title-section">
             <FontAwesomeIcon icon={faCalendarAlt} className="modal-icon" />
-            <h2>Cadastro de Evento</h2>
+            <h2>{eventToEdit ? "Editar Evento" : "Cadastrar Evento"}</h2>
           </div>
           <button className="modal-close-btn" onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} />
@@ -207,7 +239,6 @@ const EventModal = ({ isOpen, onClose, equipment, eventToEdit }) => {
                 value={formData.finalizedDate}
                 onChange={handleChange}
                 className="form-input"
-                required
               />
             </div>
 
@@ -293,18 +324,6 @@ const EventModal = ({ isOpen, onClose, equipment, eventToEdit }) => {
               />
             </div>
 
-            <div className="form-group checkbox-group">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="calibrationRequested"
-                  checked={formData.calibrationRequested}
-                  onChange={handleChange}
-                  className="checkbox-input"
-                />
-                <span className="checkbox-text">Calibração Solicitada</span>
-              </label>
-            </div>
           </div>
 
           <div className="modal-footer">
